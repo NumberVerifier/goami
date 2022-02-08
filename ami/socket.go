@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"strings"
 )
@@ -62,6 +63,7 @@ func (s *Socket) Recv(ctx context.Context) (string, error) {
 	for {
 		select {
 		case msg, ok := <-s.incoming:
+			// log.Printf("Recv msg %q %v", msg, ok)
 			if !ok {
 				return buffer.String(), io.EOF
 			}
@@ -70,10 +72,13 @@ func (s *Socket) Recv(ctx context.Context) (string, error) {
 				return buffer.String(), nil
 			}
 		case err := <-s.errors:
+			// log.Printf("Recv errors %v", err)
 			return buffer.String(), err
 		case <-s.shutdown:
+			log.Printf("Recv shutdown")
 			return buffer.String(), io.EOF
 		case <-ctx.Done():
+			log.Printf("Recv CONTEXT DONE Timeout")
 			return buffer.String(), io.EOF
 		}
 	}
@@ -87,6 +92,13 @@ func (s *Socket) run(ctx context.Context, conn net.Conn) {
 			s.errors <- err
 			return
 		}
-		s.incoming <- msg
+		select {
+		case <-ctx.Done():
+			log.Printf("Socket run done")
+			s.conn.Close()
+			return
+		default:
+			s.incoming <- msg
+		}
 	}
 }

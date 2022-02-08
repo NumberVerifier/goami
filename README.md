@@ -1,5 +1,7 @@
 goami
 =====
+## THIS IS A FORK not mine, fixing issues with context timeouts
+
 Asterisk Manager Interface (AMI) client in Go.
 
 ## About
