@@ -53,7 +53,8 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	phone := "+18004444444"
+	// phone := "+18004444444"
+	phone := "+17148180214"
 	callerid := "+12132133000"
 	octx, ocancel := context.WithTimeout(ctx, 15*time.Second)
 	defer ocancel()
@@ -68,13 +69,30 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Originate response:\n%v", oresp)
+
 	ectx, ecancel := context.WithTimeout(ctx, 20*time.Second)
 	defer ecancel()
-	earesp, eaerr := ami.EventsAction(ectx, asterisk.socket, g)
-	if eaerr != nil {
-		log.Fatalf("Failed to get response %v", eaerr)
+	dialresp, err := ami.ReadWaitForEventString(ectx, asterisk.socket, "DialBegin", []string{callerid, phone})
+	if err != nil {
+		log.Fatalf("Error getting DialBegin %v", err)
 	}
-	log.Printf("Response %v", earesp)
+	log.Printf("Dialresponse:\n%v\n", dialresp)
+	channel := dialresp.Get("DestChannel")
+	log.Printf("Channel: %s", channel)
+
+	ectx2, ecancel2 := context.WithTimeout(ctx, 20*time.Second)
+	defer ecancel2()
+	earesp, eaerr := ami.EventsAction(ectx2, asterisk.socket, g)
+	if eaerr != nil {
+		log.Printf("Failed to get response %v", eaerr)
+		hresp, herr := ami.Hangup(ctx, asterisk.socket, g, channel, "1")
+		if herr != nil {
+			log.Fatalf("Failed to hangup caller %v", herr)
+		}
+		log.Printf("Hresp %v", hresp)
+	} else {
+		log.Printf("Response %v", earesp)
+	}
 
 	// dialresp, err := ami.ReadWaitForEventString(ectx, asterisk.socket, "DialBegin", []string{callerid, phone})
 	// if err != nil {
