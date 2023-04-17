@@ -4,11 +4,10 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"github.com/NumberVerifier/goami/ami"
 	"log"
 	"sync"
 	"time"
-
-	"github.com/ktmdan/goami/ami"
 )
 
 var (
