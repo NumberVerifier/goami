@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 )
@@ -86,7 +85,7 @@ waitagain:
 			return pr, err
 		}
 	}
-	log.Printf("Event did not match %s %s", pr.Get("Event"), event)
+	//log.Printf("Event did not match %s %s", pr.Get("Event"), event)
 	// if pr.Get("Event") == "OriginateResponse" {
 	// 	log.Printf("OriginateResponse\n%v\n", pr)
 	// }

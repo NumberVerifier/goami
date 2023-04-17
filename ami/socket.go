@@ -78,7 +78,7 @@ func (s *Socket) Recv(ctx context.Context) (string, error) {
 			log.Printf("Recv shutdown")
 			return buffer.String(), io.EOF
 		case <-ctx.Done():
-			log.Printf("Recv CONTEXT DONE Timeout")
+			//log.Printf("Recv CONTEXT DONE Timeout")
 			return buffer.String(), io.EOF
 		}
 	}
