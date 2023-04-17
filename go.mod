@@ -1,4 +1,4 @@
-module github.com/ktmdan/goami
+module github.com/NumberVerifier/goami
 
 go 1.12
 
